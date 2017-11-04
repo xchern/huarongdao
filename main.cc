@@ -76,55 +76,30 @@ bool reach(World w) {
   return m.x_min == 10 && m.y_min == 0;
 }
 
+const std::pair<char, char> moves[] = {
+  std::make_pair(10,0),
+  std::make_pair(-10,0),
+  std::make_pair(0,10),
+  std::make_pair(0,-10)
+};
+
 std::vector<World> next(World w) {
-  std::vector<World> n;
+  std::set<World> n;
   for (auto & b: w) {
-    b=b.translate(10, 0);
-    if (check(w)) {
-      n.push_back(w);
-      b=b.translate(10, 0);
+    for (auto m : moves) {
+      b = b.translate(m.first,m.second);
       if (check(w)) {
-        n.push_back(w);
+        n.insert(w);
+        for (auto m : moves) {
+          b = b.translate(m.first,m.second);
+          if (check(w)) n.insert(w);
+          b = b.translate(-m.first,-m.second);
+        }
       }
-      b=b.translate(-10, 0);
+      b = b.translate(-m.first,-m.second);
     }
-    b=b.translate(-10, 0);
-
-    b=b.translate(-10, 0);
-    if (check(w)) {
-      n.push_back(w);
-      b=b.translate(-10, 0);
-      if (check(w)) {
-        n.push_back(w);
-      }
-      b=b.translate(10, 0);
-    }
-    b=b.translate(10, 0);
-
-    b=b.translate(0, 10);
-    if (check(w)) {
-      n.push_back(w);
-      b=b.translate(0, 10);
-      if (check(w)) {
-        n.push_back(w);
-      }
-      b=b.translate(0, -10);
-    }
-    b=b.translate(0, -10);
-
-    b=b.translate(0, -10);
-    if (check(w)) {
-      n.push_back(w);
-      b=b.translate(0, -10);
-      if (check(w)) {
-        n.push_back(w);
-      }
-      b=b.translate(0, 10);
-    }
-    b=b.translate(0, 10);
-
   }
-  return std::move(n);
+  return std::vector<World>(n.begin(), n.end());
 }
 
 
